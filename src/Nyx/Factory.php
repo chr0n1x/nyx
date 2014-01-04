@@ -2,6 +2,7 @@
 
 namespace Nyx;
 
+use Httpful\Request;
 use Nyx\Util\Http;
 
 class Factory {
@@ -21,16 +22,10 @@ class Factory {
   public function request( $method, array $arguments ) {
 
     if ( !$this->_util->isValidHttpMethod( $method ) ) {
-      throw new \Exception( "Unknown method [{$fx}]" );
+      throw new \BadMethodCallException( "Unknown method [{$method}]" );
     }
 
-    $request = call_user_func_array( array( 'Httpful\Request', $method ), $arguments );
-
-    if ( $request instanceof Request ) {
-      return $request;
-    }
-
-    throw new \Exception( 'Failed to create response; params: ' . var_export( $arguments, true ) );
+    return call_user_func_array( array( 'Httpful\Request', $method ), $arguments );
 
   } // request
 
