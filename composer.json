@@ -10,6 +10,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
+        "theseer/fdomdocument": "1.4.3",
         "nategood/httpful": "dev-master#3fae8a1dd30d49cc5b9c1371a2fc94166e943f2a"
     },
     "require-dev": {
