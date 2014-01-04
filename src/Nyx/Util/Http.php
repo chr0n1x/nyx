@@ -7,6 +7,9 @@ use Nyx\Util;
 
 class Http extends Util {
 
+  const HTTP  = 'http';
+  const HTTPS = 'https';
+
   private $_methods;
 
   public function __construct( array $config = array() ) {
@@ -31,5 +34,15 @@ class Http extends Util {
     return preg_replace( '/^[(http)[s]*]*(:\/\/)/', '', $url );
 
   } // sanitizeUrlProtocol
+
+  public function appendProtocol( $url, $secure = true ) {
+
+    $proto = ( $secure )
+             ? self::HTTPS
+             : self::HTTP;
+
+    return $proto . '://' . $this->removeProtocol( $url );
+
+  } // appendProtocol
 
 } // Http

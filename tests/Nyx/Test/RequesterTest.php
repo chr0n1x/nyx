@@ -31,33 +31,12 @@ class RequesterTest extends \PHPUnit_Framework_TestCase {
   /**
    * @test
    */
-  public function sslSwitch() {
-
-    $this->assertEquals( 'http', $this->_instance->setSsl( false ) );
-    $this->assertEquals( 'https', $this->_instance->setSsl( true ) );
-
-  } // sslSwitch
-
-  /**
-   * @test
-   * @depends sslSwitch
-   */
   public function requestUrlWorks() {
-
-    $this->_instance->setSsl( true );
 
     $this->assertEquals( 'https://blah.com', $this->_instance->setRequestUrl( 'blah.com' ) );
     $this->assertEquals( 'https://blah.com', $this->_instance->setRequestUrl( 'http://blah.com' ) );
     $this->assertEquals( 'https://blah.com', $this->_instance->setRequestUrl( 'https://blah.com' ) );
     $this->assertEquals( 'https://blah.com', $this->_instance->setRequestUrl( 'httpshttp://blah.com' ) );
-
-    $this->_instance->setSsl( false );
-
-    $this->assertEquals( 'http://blah.com', $this->_instance->setRequestUrl( 'blah.com' ) );
-    $this->assertEquals( 'http://blah.com', $this->_instance->setRequestUrl( 'http://blah.com' ) );
-    $this->assertEquals( 'http://blah.com', $this->_instance->setRequestUrl( 'https://blah.com' ) );
-    $this->assertEquals( 'http://blah.com', $this->_instance->setRequestUrl( 'httpshttp://blah.com' ) );
-
 
   } // requestUrlWorks
 

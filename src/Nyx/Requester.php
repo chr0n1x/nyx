@@ -8,9 +8,9 @@ use Nyx\Util\Http;
 class Requester {
 
   /**
-   * @string
+   * @bool
    */
-  protected $_protocol = 'https';
+  protected $_ssl = true;
 
   /**
    * @array
@@ -75,8 +75,7 @@ class Requester {
 
     $this->setRequestUrl( $this->_baseUrl );
 
-    $this->_factory->request( $fx, $args )
-                   ->send();
+    return $this->_factory->request( $fx, $args );
 
   } // __call
 
@@ -86,27 +85,19 @@ class Requester {
    */
   public function setRequestUrl( $url ) {
 
-    $url = $this->_http_util->removeProtocol( $url );
-
-    $this->_baseUrl = $this->_protocol.'://'.$url;
+    $this->_baseUrl = $this->_http_util->appendProtocol( $url, $this->_ssl );
 
     return $this->_baseUrl;
 
   } // setRequestUrl
 
-  /**
-   * Set protocol
-   * @param bool  $secure
-   */
-  public function setSsl( $secure = true ) {
+  public function setFactory( Factory $factory ) {
 
-    $this->_protocol = ( $secure )
-                       ? 'https'
-                       : 'http';
+    $this->_factory = $factory;
 
-    return $this->_protocol;
+    return $this->_factory;
 
-  } // setSsl
+  } // setFactory
 
   /**
    * @param  string     $endpoint

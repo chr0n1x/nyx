@@ -10,11 +10,11 @@ class Wolfram extends Requester {
   const ERROR_MESSAGE = 'Wolfram Alpha returned an empty answer';
   const QUERY_EP      = '/v2/query';
 
-  protected $_protocol = 'http';
+  protected $_ssl       = false;
+  protected $_baseUrl = 'api.wolframalpha.com';
   protected $_endpoints = array(
       self::QUERY_EP
   );
-  protected $_baseUrl = 'api.wolframalpha.com';
 
   /**
    * @array
@@ -31,7 +31,8 @@ class Wolfram extends Requester {
     $this->_queryParams['input'] = $query;
 
     $url = $this->_buildRequestUrl( self::QUERY_EP );
-    $res = $this->get( $url );
+    $res = $this->get( $url )
+                ->send();
     $res = (string)$res;
 
     return ( empty( $res ) )
