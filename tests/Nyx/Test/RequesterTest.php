@@ -76,4 +76,11 @@ class RequesterTest extends \PHPUnit_Framework_TestCase {
 
   } // unknownHttpMethodPoosItself
 
+  /**
+   * Create mock of requester
+   */
+  protected function _createMock() {
+
+  } // createMock
+
 } // RequesterTest
