@@ -150,4 +150,19 @@ class Requester {
 
   } // _buildEndpointUrl
 
+  /**
+   * @param  string  $endpoint
+   * @param  array   $params  Keys = variable names, Values = values
+   * @return string
+   */
+  protected function _buildRequestUrl( $endpoint, array $params = [] ) {
+
+    $params = ( empty( $params ) )
+              ? $this->_queryParams
+              : $params;
+
+    return $this->_buildEndpointUrl( $endpoint ) . $this->_buildQueryStream( $params );
+
+  } // _buildRequestUrl
+
 } // Nyx\Requester
