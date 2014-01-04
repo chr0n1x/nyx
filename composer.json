@@ -1,0 +1,23 @@
+{
+    "name": "chr0n1x/nyx",
+    "description": "Collection of semantic tools",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kevin Ran",
+            "email": "heilong24@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "nategood/httpful": "dev-master#3fae8a1dd30d49cc5b9c1371a2fc94166e943f2a"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.28"
+    },
+    "autoload": {
+        "psr-0": {
+            "Nyx": "src"
+        }
+    }
+}
