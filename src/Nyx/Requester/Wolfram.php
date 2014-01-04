@@ -31,8 +31,7 @@ class Wolfram extends Requester {
     $this->_queryParams['input'] = $query;
 
     $url = $this->_buildRequestUrl( self::QUERY_EP );
-    $res = $this->get( $url )
-                ->send();
+    $res = $this->get( $url );
     $res = (string)$res;
 
     return ( empty( $res ) )

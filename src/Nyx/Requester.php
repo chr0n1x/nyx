@@ -2,14 +2,15 @@
 
 namespace Nyx;
 
-use Httpful\Http;
+use Nyx\Factory;
+use Nyx\Util\Http;
 
 class Requester {
 
   /**
    * @string
    */
-  protected $_protocol    = 'https';
+  protected $_protocol = 'https';
 
   /**
    * @array
@@ -38,24 +39,25 @@ class Requester {
   protected $_url;
 
   /**
-   * @array
-   * Initialized in contructor
-   * Methods that are allowed to be used with Httpful\Request
+   * @Nyx\Util\Http
    */
-  private $_methods;
+  protected $_http_util;
+
+  /**
+   * @Nyx\Factory
+   */
+  protected $_factory;
 
   /**
    * @param  array       $cfg        Anything special that needs to be merged
    *                                 into $this->_queryParams
    * @throws \Exception              When the endpoint url is invalid
    */
-  public function __construct( $cfg = array() ) {
+  public function __construct( $overrides = array(), $cfg = array() ) {
 
-    $methods = array_merge( Http::safeMethods(), Http::idempotentMethods() );
-    $methods = array_map( 'strtolower', $methods );
-
-    $this->_methods     = $methods;
-    $this->_queryParams = array_merge( $this->_queryParams, $cfg );
+    $this->_queryParams = array_merge( $this->_queryParams, $overrides );
+    $this->_http_util   = new Http( $cfg );
+    $this->_factory     = new Factory( $cfg, $this->_http_util );
 
   } // __construct
 
@@ -73,11 +75,8 @@ class Requester {
 
     $this->setRequestUrl( $this->_baseUrl );
 
-    if ( !in_array( $fx, $this->_methods ) ) {
-      throw new \Exception( "Unknown method [{$fx}]" );
-    }
-
-    return call_user_func_array( array( 'Httpful\Request', $fx ), $args );
+    $this->_factory->request( $fx, $args )
+                   ->send();
 
   } // __call
 
@@ -87,7 +86,7 @@ class Requester {
    */
   public function setRequestUrl( $url ) {
 
-    $url = preg_replace( '/^[(http)[s]*]*(:\/\/)/', '', $url );
+    $url = $this->_http_util->removeProtocol( $url );
 
     $this->_baseUrl = $this->_protocol.'://'.$url;
 
@@ -110,10 +109,43 @@ class Requester {
   } // setSsl
 
   /**
+   * @param  string     $endpoint
+   * @return string
+   * @throws \Exception
+   */
+  protected function _buildEndpointUrl( $endpoint ) {
+
+    if ( !in_array( $endpoint, $this->_endpoints ) ) {
+      throw new \Exception( "Unknown endpoint {$endpoint}" );
+    }
+
+    // force reset of protocol
+    $this->setRequestUrl( $this->_baseUrl );
+
+    return $this->_baseUrl . $endpoint;
+
+  } // _buildEndpointUrl
+
+  /**
+   * @param  string  $endpoint
+   * @param  array   $params  Keys = variable names, Values = values
+   * @return string
+   */
+  protected function _buildRequestUrl( $endpoint, array $params = [] ) {
+
+    $params = ( empty( $params ) )
+              ? $this->_queryParams
+              : $params;
+
+    return $this->_buildEndpointUrl( $endpoint ) . $this->_buildQueryStream( $params );
+
+  } // _buildRequestUrl
+
+  /**
    * @param  array $params  Keys = variable names, Values = values
    * @return string
    */
-  protected function _buildQueryStream( array $params ) {
+  public function _buildQueryStream( array $params ) {
 
     if ( empty( $params ) ) {
       return '';
@@ -133,36 +165,5 @@ class Requester {
     return $query;
 
   } // _buildQueryStream
-
-  /**
-   * @param  string     $endpoint
-   * @return string
-   * @throws \Exception
-   */
-  protected function _buildEndpointUrl( $endpoint ) {
-
-    if ( !in_array( $endpoint, $this->_endpoints ) ) {
-      throw new \Exception( "Unknown endpoint {$endpoint}" );
-    }
-
-    // force reset of protocol
-    return $this->setRequestUrl( $this->_baseUrl ) . $endpoint;
-
-  } // _buildEndpointUrl
-
-  /**
-   * @param  string  $endpoint
-   * @param  array   $params  Keys = variable names, Values = values
-   * @return string
-   */
-  protected function _buildRequestUrl( $endpoint, array $params = [] ) {
-
-    $params = ( empty( $params ) )
-              ? $this->_queryParams
-              : $params;
-
-    return $this->_buildEndpointUrl( $endpoint ) . $this->_buildQueryStream( $params );
-
-  } // _buildRequestUrl
 
 } // Nyx\Requester
