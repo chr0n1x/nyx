@@ -29,7 +29,6 @@
     <blacklist>
       <directory>../vendor</directory>
       <directory>./</directory>
-      <directory>/usr/*</directory>
     </blacklist>
   </filter>
 
