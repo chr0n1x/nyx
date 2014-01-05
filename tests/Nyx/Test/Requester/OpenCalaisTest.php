@@ -10,6 +10,15 @@ class OpenCalaisTest extends \PHPUnit_Framework_TestCase {
   /**
    * @test
    */
+  public function validResponseReturnsWellFormattedArray() {
+
+    $val = ( new OpenCalais )->enrich( 'this is some random text' );
+
+  } // validResponseReturnsWellFormattedArray
+
+  /**
+   * @test
+   */
   public function emptyReturnsEmpty() {
 
     $val = ( new OpenCalais )->enrich( '' );

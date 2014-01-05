@@ -9,18 +9,20 @@ use Nyx\Util\Json;
 class OpenCalais extends Requester {
 
   protected $_json_util;
-  protected $_secure    = false;
+  protected $_ssl       = false;
+  protected $_baseUrl   = 'api.opencalais.com';
   protected $_endpoints = array(
-      '/tag/rs/enrich'
+      '/tag/rs/enrich',
+      '/enlighten/rest'
   );
-  protected $_baseUrl = 'api.opencalais.com';
 
   /**
    * @array
    */
   protected $_queryParams = array(
-      'licenseID' => null,
-      'content'   => '',
+      'x-calais-licenseID' => 'wcp9vj5gvzyxwfa98e4kvb3j',
+      'Content-Type'       => Mime::HTML,
+      'Accept'             => 'Application/JSON',
   );
 
   public function __construct( $overrides = array(), $cfg = array() ) {
@@ -41,11 +43,11 @@ class OpenCalais extends Requester {
       return array();
     }
 
-    $this->_queryParams['content'] = $text;
+    $this->_queryParams['content'] = trim( $text );
 
     $url = $this->_buildEndpointUrl( '/tag/rs/enrich' );
-    $res = $this->post( $url, $this->_queryParams, Mime::FORM )
-                ->addHeaders( [ 'Accept' => Mime::JSON ] )
+    $res = $this->post( $url, $text, Mime::HTML )
+                ->addHeaders( $this->_queryParams )
                 ->send();
 
     $json = json_decode( (string)$res );
