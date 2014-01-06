@@ -20,9 +20,9 @@ class OpenCalais extends Requester {
    * @array
    */
   protected $_queryParams = array(
-      'x-calais-licenseID' => 'wcp9vj5gvzyxwfa98e4kvb3j',
       'Content-Type'       => Mime::HTML,
       'Accept'             => 'Application/JSON',
+      'x-calais-licenseID' => null,
   );
 
   public function __construct( $overrides = array(), $cfg = array() ) {
@@ -43,13 +43,14 @@ class OpenCalais extends Requester {
       return array();
     }
 
-    $this->_queryParams['content'] = trim( $text );
+    $headers = [];
 
-    $url = $this->_buildEndpointUrl( '/tag/rs/enrich' );
-    $res = $this->post( $url, $text, Mime::HTML )
-                ->addHeaders( $this->_queryParams )
-                ->send();
+    foreach ( $this->_queryParams as $key => $val ) {
+      $headers[] = "{$key}: {$val}";
+    }
 
+    $uri  = $this->_buildEndpointUrl( '/tag/rs/enrich' );
+    $res  = $this->_postRequest( $uri, $text, $headers );
     $json = json_decode( (string)$res );
 
     return ( empty( $json ) )
@@ -57,5 +58,30 @@ class OpenCalais extends Requester {
            : $this->_json_util->jsonToArray( (string)$res );
 
   } // enrich
+
+  /**
+   * @todo: figure out why this request does not work with Httpful, even though
+   *        the headers & CURLOPT_*s are the same...
+   * @param string $uri
+   * @param string $content
+   * @param array  $headers
+   * @return string
+   */
+  protected function _postRequest( $uri, $content, array $headers = array() ) {
+
+    // for some reason Httpful just does not work well with
+    // this particular request...
+    $ch = curl_init();
+    curl_setopt( $ch, CURLOPT_URL, $uri );
+    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+    curl_setopt( $ch, CURLOPT_POSTFIELDS, $content );
+    curl_setopt( $ch, CURLOPT_POST, true );
+    curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );
+    $res = curl_exec($ch);
+    curl_close($ch);
+
+    return $res;
+
+  } // _postRequest
 
 } // Nyx\Requester\Wolfram

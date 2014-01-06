@@ -10,15 +10,6 @@ class OpenCalaisTest extends \PHPUnit_Framework_TestCase {
   /**
    * @test
    */
-  public function validResponseReturnsWellFormattedArray() {
-
-    $val = ( new OpenCalais )->enrich( 'this is some random text' );
-
-  } // validResponseReturnsWellFormattedArray
-
-  /**
-   * @test
-   */
   public function emptyReturnsEmpty() {
 
     $val = ( new OpenCalais )->enrich( '' );
@@ -48,5 +39,23 @@ class OpenCalaisTest extends \PHPUnit_Framework_TestCase {
     $this->assertInternalType( 'array', $val );
 
   } // responseWellFormatted
+
+  protected function _assertArrayNestedOrScalar( array $arr ) {
+
+    foreach ( $arr as $val ) {
+
+      if ( is_array( $val ) ) {
+        $this->_assertArrayNestedOrScalar( $val );
+      }
+      else if ( is_scalar( $val ) ) {
+        continue;
+      }
+      else {
+        $this->fail();
+      }
+
+    } // foreach val
+
+  } // _assertArrayNestedOrScalar
 
 } // OpenCalaisTest

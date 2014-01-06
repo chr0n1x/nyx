@@ -22,7 +22,7 @@ class Json extends Util {
 
     foreach ( $ret as $key => $val ) {
       if ( is_object( $val ) || is_array( $val ) ) {
-        $ret[ $key ] = $this->jsonToArrayR( $val );
+        $ret[ $key ] = $this->_stdClassToArray( $val );
       }
     }
 
