@@ -16,7 +16,7 @@ class Http extends Util {
 
     parent::__construct( $config );
 
-    $methods = array_merge( Httpful\Http::safeMethods(), Httpful\Http::idempotentMethods() );
+    $methods = array_merge( Httpful\Http::safeMethods(), Httpful\Http::idempotentMethods(), Httpful\Http::canHaveBody() );
     $methods = array_map( 'strtolower', $methods );
 
     $this->_methods = $methods;
